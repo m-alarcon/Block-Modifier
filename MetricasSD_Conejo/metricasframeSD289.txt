@@ -1,0 +1,527 @@
+dwhile
+    if n >= max
+      setf rexx
+    endif
+  endif
+endfun
+
+" Remind
+au BufNewFile,BufRead .reminders*		setf remind
+
+" Resolv.conf
+au BufNewFile,BufRead resolv.conf		setf resolv
+
+" Relax NG Compact
+au BufNewFile,BufRead *.rnc			setf rnc
+
+" RPL/2
+au BufNewFile,BufRead *.rpl			setf rpl
+
+" Robots.txt
+au BufNewFile,BufRead robots.txt		setf robots
+
+" Rpcgen
+au BufNewFile,BufRead *.x			setf rpcgen
+
+" reStructuredText Documentation Format
+au BufNewFile,BufRead *.rst			setf rst
+
+" RTF
+au BufNewFile,BufRead *.rtf			setf rtf
+
+" Ruby
+au BufNewFile,BufRead *.rb,*.rbw,*.gem,*.gemspec	setf ruby
+
+" S-lang (or shader language!)
+au BufNewFile,BufRead *.sl			setf slang
+
+" Samba config
+au BufNewFile,BufRead smb.conf			setf samba
+
+" SAS script
+au BufNewFile,BufRead *.sas			setf sas
+
+" Sather
+au BufNewFile,BufRead *.sa			setf sather
+
+" Scilab
+au BufNewFile,BufRead *.sci			setf scilab
+
+" SDL
+au BufNewFile,BufRead *.sdl,*.pr		setf sdl
+
+" sed
+au BufNewFile,BufRead *.sed			setf sed
+
+" Sendmail
+au BufNewFile,BufRead sendmail.cf		setf sm
+
+" Sendmail .mc files are actually m4
+au BufNewFile,BufRead *.mc			setf m4
+
+" SGML
+au BufNewFile,BufRead *.sgm,*.sgml
+	\ if getline(1).getline(2).getline(3).getline(4).getline(5) =~? 'linuxdoc' |
+	\   setf sgmllnx |
+	\ elseif getline(1) =~ '<!DOCTYPE.*DocBook' || getline(2) =~ '<!DOCTYPE.*DocBook' |
+	\   let b:docbk_type="sgml" |
+	\   setf docbk |
+	\ else |
+	\   setf sgml |
+	\ endif
+
+" SGMLDECL
+au BufNewFile,BufRead *.decl,*.dcl,*.dec
+	\ if getline(1).getline(2).getline(3) =~? '^<!SGML' |
+	\    setf sgmldecl |
+	\ endif
+
+" SGML catalog file
+au BufNewFile,BufRead sgml.catalog*,catalog	setf catalog
+
+" Shell scripts (sh, ksh, bash, bash2, csh); Allow .profile_foo etc.
+" Gentoo ebuilds are actually bash scripts
+au BufNewFile,BufRead .bashrc*,bashrc,bash.bashrc,.bash_profile*,.bash_logout*,*.bash,*.ebuild call SetFileTypeSH("bash")
+au BufNewFile,BufRead .kshrc*,*.ksh call SetFileTypeSH("ksh")
+au BufNewFile,BufRead /etc/profile,.profile*,*.sh,*.env call SetFileTypeSH(getline(1))
+
+fun! SetFileTypeSH(name)
+  if a:name =~ '\<ksh\>'
+    let b:is_kornshell = 1
+    if exists("b:is_bash")
+      unlet b:is_bash
+    endif
+    if exists("b:is_sh")
+      unlet b:is_sh
+    endif
+  elseif exists("g:bash_is_sh") || a:name =~ '\<bash\>' || a:name =~ '\<bash2\>'
+    let b:is_bash = 1
+    if exists("b:is_kornshell")
+      unlet b:is_kornshell
+    endif
+    if exists("b:is_sh")
+      unlet b:is_sh
+    endif
+  elseif a:name =~ '\<sh\>'
+    let b:is_sh = 1
+    if exists("b:is_kornshell")
+      unlet b:is_kornshell
+    endif
+    if exists("b:is_bash")
+      unlet b:is_bash
+    endif
+  endif
+  setf sh
+endfun
+
+" tcsh scripts
+au BufNewFile,BufRead .tcshrc*,*.tcsh,tcsh.tcshrc,tcsh.login	setf tcsh
+
+" csh scripts, but might also be tcsh scripts (on some systems csh is tcsh)
+au BufNewFile,BufRead .login*,.cshrc*,csh.cshrc,csh.login,csh.logout,*.csh,.alias  call SetFileTypeCSH()
+
+fun! SetFileTypeCSH()
+  if exists("g:filetype_csh")
+    exe "setf " . g:filetype_csh
+  elseif &shell =~ "tcsh"
+    setf tcsh
+  else
+    setf csh
+  endif
+endfun
+
+" Z-Shell script
+au BufNewFile,BufRead .zsh*,.zlog*,.zprofile,/etc/zprofile,.zfbfmarks,.zcompdump*  setf zsh
+
+" Scheme
+au BufNewFile,BufRead *.scm,*.ss		setf scheme
+
+" Screen RC
+au BufNewFile,BufRead .screenrc,screenrc	setf screen
+
+" Simula
+au BufNewFile,BufRead *.sim			setf simula
+
+" SINDA
+au BufNewFile,BufRead *.sin,*.s85		setf sinda
+
+" SKILL
+au BufNewFile,BufRead *.il			setf skill
+
+" SLRN
+au BufNewFile,BufRead .slrnrc			setf slrnrc
+au BufNewFile,BufRead *.score			setf slrnsc
+
+" Smalltalk
+au BufNewFile,BufRead *.st,*.cls		setf st
+
+" Smarty templates
+au BufNewFile,BufRead *.tpl			setf smarty
+
+" SMIL or XML
+au BufNewFile,BufRead *.smil
+	\ if getline(1) =~ '<?\s*xml.*?>' |
+	\   setf xml |
+	\ else |
+	\   setf smil |
+	\ endif
+
+" SMIL or SNMP MIB file
+au BufNewFile,BufRead *.smi
+	\ if getline(1) =~ '\<smil\>' |
+	\   setf smil |
+	\ else |
+	\   setf mib |
+	\ endif
+
+" SMITH
+au BufNewFile,BufRead *.smt,*.smith		setf smith
+
+" Snobol4
+au BufNewFile,BufRead *.sno			setf snobol4
+
+" SNMP MIB files
+au BufNewFile,BufRead *.mib,*.my		setf mib
+
+" Snort Configuration
+au BufNewFile,BufRead *.hog,snort.conf,vision.conf,*.rules	setf hog
+
+" Spec (Linux RPM)
+au BufNewFile,BufRead *.spec			setf spec
+
+" Speedup (AspenTech plant simulator)
+au BufNewFile,BufRead *.speedup,*.spdata,*.spd	setf spup
+
+" Slice
+au BufNewFile,BufRead *.ice			setf slice
+
+" Spice
+au BufNewFile,BufRead *.sp,*.spice		setf spice
+
+" Spyce
+au BufNewFile,BufRead *.spy,*.spi		setf spyce
+
+" Squid
+au BufNewFile,BufRead squid.conf		setf squid
+
+" SQL (all but the first one for Oracle Designer)
+au BufNewFile,BufRead *.sql,*.tyb,*.typ,*.tyc,*.pkb,*.pks	setf sql
+
+" SQLJ
+au BufNewFile,BufRead *.sqlj			setf sqlj
+
+" SQR
+au BufNewFile,BufRead *.sqr,*.sqi		setf sqr
+
+" OpenSSH configuration
+au BufNewFile,BufRead ssh_config,.ssh/config	setf sshconfig
+
+" OpenSSH server configuration
+au BufNewFile,BufRead sshd_config		setf sshdconfig
+
+" Stored Procedures
+au BufNewFile,BufRead *.stp			setf stp
+
+" Standard ML
+au BufNewFile,BufRead *.sml			setf sml
+
+" Tads (or Nroff)
+au BufNewFile,BufRead *.t
+	\ if !<SID>FTnroff() | setf tads | endif
+
+" Tags
+au BufNewFile,BufRead tags			setf tags
+
+" TAK
+au BufNewFile,BufRead *.tak			setf tak
+
+" Tcl
+au BufNewFile,BufRead *.tcl,*.tk,*.itcl,*.itk	setf tcl
+
+" TealInfo
+au BufNewFile,BufRead *.tli			setf tli
+
+" Telix Salt
+au BufNewFile,BufRead *.slt			setf tsalt
+
+" Terminfo
+au BufNewFile,BufRead *.ti			setf terminfo
+
+" TeX
+au BufNewFile,BufRead *.tex,*.latex,*.sty,*.dtx,*.ltx,*.bbl	setf tex
+
+" Texinfo
+au BufNewFile,BufRead *.texinfo,*.texi,*.txi	setf texinfo
+
+" TeX configuration
+au BufNewFile,BufRead texmf.cnf			setf texmf
+
+" Tidy config
+au BufNewFile,BufRead .tidyrc,tidyrc		setf tidy
+
+" TF mud client
+au BufNewFile,BufRead *.tf,.tfrc,tfrc		setf tf
+
+" TSS - Geometry
+au BufNewFile,BufReadPost *.tssgm		setf tssgm
+
+" TSS - Optics
+au BufNewFile,BufReadPost *.tssop		setf tssop
+
+" TSS - Command Line (temporary)
+au BufNewFile,BufReadPost *.tsscl		setf tsscl
+
+" Motif UIT/UIL files
+au BufNewFile,BufRead *.uit,*.uil		setf uil
+
+" UnrealScript
+au BufNewFile,BufRead *.uc			setf uc
+
+" Verilog HDL
+au BufNewFile,BufRead *.v			setf verilog
+
+" VHDL
+au BufNewFile,BufRead *.hdl,*.vhd,*.vhdl,*.vhdl_[0-9]*,*.vbe,*.vst  setf vhdl
+
+" Vim script
+au BufNewFile,BufRead *.vim,.exrc,_exrc		setf vim
+
+" Viminfo file
+au BufNewFile,BufRead .viminfo,_viminfo		setf viminfo
+
+" Virata Config Script File
+au BufRead,BufNewFile *.hw,*.module,*.pkg	setf virata
+
+" Visual Basic (also uses *.bas) or FORM
+au BufNewFile,BufRead *.frm			call <SID>FTVB("form")
+
+" SaxBasic is close to Visual Basic
+au BufNewFile,BufRead *.sba			setf vb
+
+" Vgrindefs file
+au BufNewFile,BufRead vgrindefs			setf vgrindefs
+
+" VRML V1.0c
+au BufNewFile,BufRead *.wrl			setf vrml
+
+" Webmacro
+au BufNewFile,BufRead *.wm			setf webmacro
+
+" Wget config
+au BufNewFile,BufRead .wgetrc,wgetrc		setf wget
+
+" Website MetaLanguage
+au BufNewFile,BufRead *.wml			setf wml
+
+" Winbatch
+au BufNewFile,BufRead *.wbt			setf winbatch
+
+" WvDial
+au BufNewFile,BufRead wvdial.conf,.wvdialrc	setf wvdial
+
+" CVS RC file
+au BufNewFile,BufRead .cvsrc			setf cvsrc
+
+" CVS commit file
+au BufNewFile,BufRead cvs\d\+			setf cvs
+
+" WEB (*.web is also used for Winbatch: Guess, based on expecting "%" comment
+" lines in a WEB file).
+au BufNewFile,BufRead *.web
+	\ if getline(1)[0].getline(2)[0].getline(3)[0].getline(4)[0].getline(5)[0] =~ "%" |
+	\   setf web |
+	\ else |
+	\   setf winbatch |
+	\ endif
+
+" Windows Scripting Host and Windows Script Component
+au BufNewFile,BufRead *.ws[fc]			setf wsh
+
+" X Pixmap (dynamically sets colors, use BufEnter to make it work better)
+au BufEnter *.xpm
+	\ if getline(1) =~ "XPM2" |
+	\   setf xpm2 |
+	\ else |
+	\   setf xpm |
+	\ endif
+au BufEnter *.xpm2				setf xpm2
+
+" XFree86 config
+au BufNewFile,BufRead XF86Config
+	\ if getline(1) =~ '\<XConfigurator\>' |
+	\   let b:xf86c_xfree86_version = 3 |
+	\ endif |
+	\ setf xf86conf
+
+" Xorg config
+au BufNewFile,BufRead xorg.conf,xorg.conf-4	let b:xf86c_xfree86_version = 4 | setf xf86conf
+
+" XS Perl extension interface language
+au BufNewFile,BufRead *.xs			setf xs
+
+" X resources file
+au BufNewFile,BufRead .Xdefaults,.Xpdefaults,.Xresources,xdm-config,*.ad setf xdefaults
+
+" Xmath
+au BufNewFile,BufRead *.msc,*.msf		setf xmath
+au BufNewFile,BufRead *.ms
+	\ if !<SID>FTnroff() | setf xmath | endif
+
+" XML
+au BufNewFile,BufRead *.xml
+	\ if getline(1) . getline(2) . getline(3) =~ '<!DOCTYPE.*DocBook' |
+	\   let b:docbk_type="xml" |
+	\   setf docbk |
+	\ else |
+	\   setf xml |
+	\ endif
+
+" XMI (holding UML models) is also XML
+au BufNewFile,BufRead *.xmi			setf xml
+
+" CSPROJ files are Visual Studio.NET's XML-based project config files
+au BufNewFile,BufRead *.csproj,*.csproj.user	setf xml
+
+" Qt Linguist translation source and Qt User Interface Files are XML
+au BufNewFile,BufRead *.ts,*.ui			setf xml
+
+" XSD
+au BufNewFile,BufRead *.xsd			setf xsd
+
+" Xslt
+au BufNewFile,BufRead *.xsl,*.xslt		setf xslt
+
+" Yacc
+au BufNewFile,BufRead *.y,*.yy			setf yacc
+
+" Yaml
+au BufNewFile,BufRead *.yaml,*.yml		setf yaml
+
+" Z80 assembler asz80
+au BufNewFile,BufRead *.z8a			setf z8a
+
+augroup END
+
+
+" Source the user-specified filetype file, for backwards compatibility with
+" Vim 5.x.
+if exists("myfiletypefile") && file_readable(expand(myfiletypefile))
+  execute "source " . myfiletypefile
+endif
+
+
+" Check for "*" after loading myfiletypefile, so that scripts.vim is only used
+" when there are no matching file name extensions.
+" Don't do this for compressed files.
+augroup filetypedetect
+au BufNewFile,BufRead *
+	\ if !did_filetype() && expand("<amatch>") !~ g:ft_ignore_pat
+	\ | runtime! scripts.vim | endif
+au StdinReadPost * if !did_filetype() | runtime! scripts.vim | endif
+
+
+" Extra checks for when no filetype has been detected now.  Mostly used for
+" patterns that end in "*".  E.g., "zsh*" matches "zsh.vim", but that's a Vim
+" script file.
+
+" BIND zone
+au BufNewFile,BufRead /var/named/*		setf bindzone
+
+" Changelog
+au BufNewFile,BufRead [cC]hange[lL]og*		if getline(1) =~ '; urgency='
+	\| setf debchangelog | else | setf changelog | endif
+
+" Crontab
+au BufNewFile,BufRead crontab,crontab.*		setf crontab
+
+" Dracula
+au BufNewFile,BufRead drac.*			setf dracula
+
+" Fvwm
+au BufNewFile,BufRead *fvwmrc*,*fvwm95*.hook
+	\ let b:fvwm_version = 1 | setf fvwm
+au BufNewFile,BufRead *fvwm2rc*
+	\ if expand("<afile>:e") == "m4" | setf fvwm2m4 | else |
+	\ let b:fvwm_version = 2 | setf fvwm | endif
+
+" GTK RC
+au BufNewFile,BufRead .gtkrc*,gtkrc*		setf gtkrc
+
+" Jam
+au BufNewFile,BufRead Prl*.*,JAM*.*		setf jam
+
+" Jargon
+au! BufNewFile,BufRead *jarg*
+	\ if getline(1).getline(2).getline(3).getline(4).getline(5) =~? 'THIS IS THE JARGON FILE' |
+	\   setf jargon |
+	\ endif
+
+" Makefile
+au BufNewFile,BufRead [mM]akefile*		setf make
+
+" Ruby Makefile
+au BufNewFile,BufRead [rR]akefile*		setf ruby
+
+" Mutt setup file
+au BufNewFile,BufRead muttrc*,Muttrc*		setf muttrc
+
+" Nroff macros
+au BufNewFile,BufRead tmac.*			setf nroff
+
+" Printcap and Termcap
+au BufNewFile,BufRead *printcap*
+	\ if !did_filetype() | let b:ptcap_type = "print" | setf ptcap | endif
+au BufNewFile,BufRead *termcap*
+	\ if !did_filetype() | let b:ptcap_type = "term" | setf ptcap | endif
+
+" Vim script
+au BufNewFile,BufRead *vimrc*			setf vim
+
+" Subversion commit file
+au BufNewFile,BufRead svn-commit.*.tmp		setf svn
+
+" X resources file
+au BufNewFile,BufRead Xresources*,*/app-defaults/*,*/Xresources/* setf xdefaults
+
+" XFree86 config
+au BufNewFile,BufRead XF86Config-4*
+	\ let b:xf86c_xfree86_version = 4 | setf xf86conf
+au BufNewFile,BufRead XF86Config*
+	\ if getline(1) =~ '\<XConfigurator\>' |
+	\   let b:xf86c_xfree86_version = 3 |
+	\ endif |
+	\ setf xf86conf
+
+" X11 xmodmap
+au BufNewFile,BufRead *xmodmap*			setf xmodmap
+
+" Z-Shell script
+au BufNewFile,BufRead zsh*,zlog*		setf zsh
+
+
+" Generic configuration file (check this last, it's just guessing!)
+au BufNewFile,BufRead,StdinReadPost *
+	\ if !did_filetype() && expand("<amatch>") !~ g:ft_ignore_pat
+	\    && (getline(1) =~ '^#' || getline(2) =~ '^#' || getline(3) =~ '^#'
+	\	|| getline(4) =~ '^#' || getline(5) =~ '^#') |
+	\   setf conf |
+	\ endif
+
+" Use the plugin-filetype checks last, they may overrule any of the previously
+" detected filetypes.
+runtime! ftdetect/*.vim
+
+augroup END
+
+
+" If the GUI is already running, may still need to install the Syntax menu.
+" Don't do it when the 'M' flag is included in 'guioptions'.
+if has("menu") && has("gui_running")
+      \ && !exists("did_install_syntax_menu") && &guioptions !~# "M"
+  source <sfile>:p:h/menu.vim
+endif
+
+" Restore 'cpoptions'
+let &cpo = s:cpo_save
+unlet s:cpo_save
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
