@@ -483,7 +483,7 @@ def deltas(num_fotograma, bloque):
 
 	#El delta va a ser la resta de los valores de los píxeles en el bloque. Un delta por píxel.
 	deltas = np.zeros((im.size[0], im.size[1]), 'int16')
-	deltas = np.subtract(a2,a1)
+	deltas = np.subtract(a1,a2)
 
 	delta0 = 0
 	delta1 = 0
