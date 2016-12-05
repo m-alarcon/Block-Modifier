@@ -10,7 +10,7 @@ import Funciones_BM as bm
 
 contador_linea = 1
 
-with open("entrenamientoSDcoches.csv", 'w', newline='') as csvfile:
+with open("entrenamientoSDcoches1.csv", 'w', newline='') as csvfile:
 	for f in range(2, 200):
 		#Se cargan las imagenes que se van a comparar por bloques.
 		im = Image.open("D:/Manuel/Downloads/Beca/Cosas_que_voy_haciendo/Fotogramas para usar/SD/frameSD"+str(f)+".bmp")
