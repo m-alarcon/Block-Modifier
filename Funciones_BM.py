@@ -464,9 +464,9 @@ def experimento_despl_v2(a1, a2, bloq, ancho_bloq):
 #El numero de fotograma tiene que empezar por el 2
 def deltas(num_fotograma, bloque):
 
-	im = Image.open("D:/Manuel/Downloads/Beca/Cosas_que_voy_haciendo/Fotogramas para usar/SD/frameSD"+str(num_fotograma)+".bmp")
+	im = Image.open("C:/Users/malarcon/Images/Ice/frame"+str(num_fotograma)+".bmp")
 	im = im.convert('L')
-	im2 = Image.open("D:/Manuel/Downloads/Beca/Cosas_que_voy_haciendo/Fotogramas para usar/SD/frameSD"+str(num_fotograma-1)+".bmp")
+	im2 = Image.open("C:/Users/malarcon/Images/Ice/frame"+str(num_fotograma-1)+".bmp")
 	im2 = im2.convert('L')
 
 	#Calculo el numero de bloques que tienen las imagenes
@@ -540,7 +540,7 @@ def deltas(num_fotograma, bloque):
 #Extraccion de las metricas
 def metricas(fotograma, bloque):
 
-	with open("D:/Manuel/Downloads/Beca/Block modifier/MetricasSD/metricasframeSD"+str(fotograma)+".txt") as archivo_json:
+	with open("C:/Users/malarcon/Images/MetricasIce/metricasframe"+str(fotograma)+".txt") as archivo_json:
 		metricas = json.load(archivo_json)
 
 	filas = int(len(metricas)/33)
@@ -562,6 +562,7 @@ def metricas(fotograma, bloque):
 	pry2 = m_metricas[n_col-1][n_fila][1]
 	pry3 = m_metricas[n_col][n_fila-1][1]
 	pry4 = m_metricas[n_col][n_fila][1]
+	
 
 	return (prx1, prx2, prx3, prx4, pry1, pry2, pry3, pry4)
 

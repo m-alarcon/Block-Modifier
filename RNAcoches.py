@@ -10,12 +10,12 @@ import Funciones_BM as bm
 
 contador_linea = 1
 
-with open("entrenamientoSDcoches1.csv", 'w', newline='') as csvfile:
+with open("entrenamientoPatinadores.csv", 'w', newline='') as csvfile:
 	for f in range(2, 200):
 		#Se cargan las imagenes que se van a comparar por bloques.
-		im = Image.open("D:/Manuel/Downloads/Beca/Cosas_que_voy_haciendo/Fotogramas para usar/SD/frameSD"+str(f)+".bmp")
+		im = Image.open("C:/Users/malarcon/Images/Ice/frame"+str(f)+".bmp")
 		im = im.convert('L')
-		im2 = Image.open("D:/Manuel/Downloads/Beca/Cosas_que_voy_haciendo/Fotogramas para usar/SD/frameSD"+str(f-1)+".bmp")
+		im2 = Image.open("C:/Users/malarcon/Images/Ice/frame"+str(f-1)+".bmp")
 		im2 = im2.convert('L')
 
 		#Calculo el numero de bloques que tienen las imagenes
@@ -34,13 +34,14 @@ with open("entrenamientoSDcoches1.csv", 'w', newline='') as csvfile:
 
 			(prx11, prx21, prx31, prx41, pry11, pry21, pry31, pry41) = bm.metricas(f, bloq)
 			(prx12, prx22, prx32, prx42, pry12, pry22, pry32, pry42) = bm.metricas(f-1, bloq)
+
 			(delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5) = bm.deltas(f, bloq)
 			(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
 
 			writer = csv.writer(csvfile, delimiter=',',
 			                        quotechar=',', quoting=csv.QUOTE_MINIMAL)
-			writer.writerow([str(contador_linea)+"->", prx11, prx21, prx31, prx41, pry11, pry21, pry31, pry41, prx12, prx22, prx32, prx42, pry12, pry22, pry32, pry42,
-				delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5, valorx+0.5, valory+0.5])
+			writer.writerow([str(contador_linea)+"->", prx11, prx21, prx31, prx41, pry11, pry21, pry31, pry41, prx12, prx22, prx32, prx42, pry12, pry22, pry32, pry42, prx11-prx12, prx21-prx22, prx31-prx32, prx41-prx42, prx11-prx21, prx31-prx41, prx12-prx22, prx32-prx42, pry11-pry12, pry21-pry22, pry31-pry32, pry41-pry42, pry11-pry31, pry21-pry41, pry12-pry22, pry32-pry42,
+				delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5, valorx, valory])
 
 			contador_linea = contador_linea + 1
 		
