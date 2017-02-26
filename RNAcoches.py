@@ -41,7 +41,7 @@ with open("entrenamientoPatinadores.csv", 'w', newline='') as csvfile:
 			writer = csv.writer(csvfile, delimiter=',',
 			                        quotechar=',', quoting=csv.QUOTE_MINIMAL)
 			writer.writerow([str(contador_linea)+"->", prx11, prx21, prx31, prx41, pry11, pry21, pry31, pry41, prx12, prx22, prx32, prx42, pry12, pry22, pry32, pry42, prx11-prx12, prx21-prx22, prx31-prx32, prx41-prx42, prx11-prx21, prx31-prx41, prx12-prx22, prx32-prx42, pry11-pry12, pry21-pry22, pry31-pry32, pry41-pry42, pry11-pry31, pry21-pry41, pry12-pry22, pry32-pry42,
-				delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5, valorx, valory])
+				delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5, valorx+0.5, valory+0.5])
 
 			contador_linea = contador_linea + 1
 		
