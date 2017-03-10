@@ -540,7 +540,7 @@ def deltas(num_fotograma, bloque):
 #Extraccion de las metricas
 def metricas(fotograma, bloque, rutaMetricas):
 
-	with open(rutaMetricas + "/metricasframeSD"+str(fotograma)+".txt") as archivo_json:
+	with open(rutaMetricas + "/metricasframe"+str(fotograma)+".txt") as archivo_json:
 		metricas = json.load(archivo_json)
 
 	filas = int(len(metricas)/33)
