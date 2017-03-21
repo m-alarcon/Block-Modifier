@@ -37,16 +37,16 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 		#for bloq in range(1,num_bloques):
 		#for bloq_x in range(2, 32):
 			#for bloq_y in range(1, num_filas):
-		bloq = 434#(bloq_y*32)+bloq_x
+		bloq = 1#(bloq_y*32)+bloq_x
 		bloque_im = div.sel_bloque(bloq,im)
 		bloque_im2 = div.sel_bloque(bloq,im2)
 		a1 = np.array(bloque_im, 'int16')
 		a2 = np.array(bloque_im2, 'int16')
 
-		array_pr1 = bm.metricas(f, bloq-1, rutaMetricas)
-		array_pr2 = bm.metricas(f, bloq, rutaMetricas)
-		array_pr12 = bm.metricas(f-1, bloq-1, rutaMetricas)
-		array_pr22 = bm.metricas(f-1, bloq, rutaMetricas)
+		array_pr1 = bm.metricas(f, bloq, rutaMetricas)
+		array_pr2 = bm.metricas(f, bloq+1, rutaMetricas)
+		array_pr12 = bm.metricas(f-1, bloq, rutaMetricas)
+		array_pr22 = bm.metricas(f-1, bloq+1, rutaMetricas)
 
 		#(delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5) = bm.deltas(f, bloq)
 		(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
@@ -54,8 +54,9 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 		writer = csv.writer(csvfile, delimiter=',',
 		                        quotechar=',', quoting=csv.QUOTE_MINIMAL)
 		writer.writerow([str(contador_linea)+"->", 
-			array_pr1[0], array_pr1[1], array_pr2[1], 
-			array_pr12[0], array_pr12[1], array_pr22[1], valorx])
+			array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
+			array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3],
+			valorx])
 			
 
 			#valorx+0.5, valory+0.5])		

@@ -22,9 +22,9 @@ rutaMetricas = input()
 with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 	for f in range(2, 200):
 		#Se cargan las imagenes que se van a comparar por bloques.
-		im = Image.open(archivo+"/frameSD"+str(f)+".bmp")
+		im = Image.open(archivo+"/frame"+str(f)+".bmp")
 		im = im.convert('L')
-		im2 = Image.open(archivo+"/frameSD"+str(f-1)+".bmp")
+		im2 = Image.open(archivo+"/frame"+str(f-1)+".bmp")
 		im2 = im2.convert('L')
 
 		#Calculo el numero de bloques que tienen las imagenes
@@ -34,8 +34,8 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 		num_bloques = 32*num_filas
 
 		#Se coge el mismo bloque de las dos imagenes
-		for bloq_x in range(2, 31):
-			for bloq_y in range(2, num_filas-1):
+		for bloq_x in range(1, 31):
+			for bloq_y in range(1, num_filas):
 
 				bloq = (bloq_y*32)+bloq_x
 				bloque_im = div.sel_bloque(bloq,im)
@@ -43,24 +43,10 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 				a1 = np.array(bloque_im, 'int16')
 				a2 = np.array(bloque_im2, 'int16')
 
-				array_pr1 = bm.metricas(f, bloq-33, rutaMetricas)
-				array_pr2 = bm.metricas(f, bloq-32, rutaMetricas)
-				array_pr3 = bm.metricas(f, bloq-31, rutaMetricas)
-				array_pr4 = bm.metricas(f, bloq-1, rutaMetricas)
-				array_pr5 = bm.metricas(f, bloq, rutaMetricas)
-				array_pr6 = bm.metricas(f, bloq+1, rutaMetricas)
-				array_pr7 = bm.metricas(f, bloq+31, rutaMetricas)
-				array_pr8 = bm.metricas(f, bloq+32, rutaMetricas)
-				array_pr9 = bm.metricas(f, bloq+33, rutaMetricas)
-				array_pr10 = bm.metricas(f-1, bloq-33, rutaMetricas)
-				array_pr11 = bm.metricas(f-1, bloq-32, rutaMetricas)
-				array_pr12 = bm.metricas(f-1, bloq-31, rutaMetricas)
-				array_pr13 = bm.metricas(f-1, bloq-1, rutaMetricas)
-				array_pr14 = bm.metricas(f-1, bloq, rutaMetricas)
-				array_pr15 = bm.metricas(f-1, bloq+1, rutaMetricas)
-				array_pr16 = bm.metricas(f-1, bloq+31, rutaMetricas)
-				array_pr17 = bm.metricas(f-1, bloq+32, rutaMetricas)
-				array_pr18 = bm.metricas(f-1, bloq+33, rutaMetricas)
+				array_pr1 = bm.metricas(f, bloq, rutaMetricas)
+				array_pr2 = bm.metricas(f, bloq+1, rutaMetricas)
+				array_pr12 = bm.metricas(f-1, bloq, rutaMetricas)
+				array_pr22 = bm.metricas(f-1, bloq+1, rutaMetricas)
 
 				#(delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5) = bm.deltas(f, bloq)
 				(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
@@ -68,23 +54,9 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 				writer = csv.writer(csvfile, delimiter=',',
 				                        quotechar=',', quoting=csv.QUOTE_MINIMAL)
 				writer.writerow([str(contador_linea)+"->", 
-					array_pr1[0], array_pr1[1], array_pr2[1], array_pr3[1], 
-					array_pr4[0], array_pr4[1], array_pr4[2], array_pr4[3], array_pr5[1], array_pr5[3], array_pr6[1], array_pr6[3],
-					array_pr7[0], array_pr7[1], array_pr8[1], array_pr9[1], 
-
-					array_pr10[0], array_pr10[1], array_pr11[1], array_pr12[1], 
-					array_pr13[0], array_pr13[1], array_pr13[2], array_pr13[3], array_pr14[1], array_pr14[3], array_pr15[1], array_pr15[3], 
-					array_pr16[0], array_pr16[1], array_pr17[1], array_pr18[1], 
-
-					array_pr1[4], array_pr1[5], array_pr2[5], array_pr3[5], 
-					array_pr4[4], array_pr4[5], array_pr4[6], array_pr4[7], array_pr5[5], array_pr5[7],	array_pr6[5], array_pr6[7], 
-					array_pr7[4], array_pr7[5], array_pr8[5], array_pr9[5], 
-
-					array_pr10[4], array_pr10[5], array_pr11[5], array_pr12[5], 
-					array_pr13[4], array_pr13[5], array_pr13[6], array_pr13[7], array_pr14[5], array_pr14[7], array_pr15[5], array_pr15[7], 
-					array_pr16[4], array_pr16[5], array_pr17[5], array_pr18[5],
-
-					valorx+0.5, valory+0.5])		
+					array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
+					array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3],
+					valorx])	
 
 				contador_linea = contador_linea + 1
 		print ("Procesado fotograma " + str(f) + " de 200")
