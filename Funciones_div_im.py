@@ -1,6 +1,5 @@
 from PIL import Image, ImageDraw
 import numpy as np
-import cv2
 import math
 
 def sel_bloque(n_bloque, img):

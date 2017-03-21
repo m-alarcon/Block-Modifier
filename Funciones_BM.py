@@ -6,6 +6,11 @@ import csv
 import json
 
 DEPURAR = 0
+carpeta_metricas = "/metricasframe"
+
+#Funcion para establecer el nombre de carpeta de las metricas
+def set_carpeta_metricas(carpeta_metricas):
+	globals()['carpeta_metricas'] = carpeta_metricas
 
 #Funcion que hace zoom a un bloque
 def zoom_positivo(ampliacion, array_imagen):
@@ -206,7 +211,7 @@ def desplazamiento_v2(tx_px, ty_px, array_imagen):
 		#Copiar la primera fila en el hueco que queda arriba
 		for x in range(0, array_imagen.shape[1]):
 		 	for y in range(0, ty_px):
-		 		array_resultado[y][x] = array_resultado[ty_px][x]	
+		 		array_resultado[y][x] = array_resultado[ty_px][x]
 
 	elif tx_px < 0 and ty_px < 0: #Desplazamiento diagonal arriba izquierda
 
@@ -226,7 +231,7 @@ def desplazamiento_v2(tx_px, ty_px, array_imagen):
 		#Copiar la ultima fila en el hueco que queda abajo
 		for x in range(0, array_imagen.shape[1]):
 			for y in range(array_imagen.shape[0]+ty_px, array_imagen.shape[0]):
-				array_resultado[y][x] = array_resultado[array_imagen.shape[0]+ty_px-1][x]	
+				array_resultado[y][x] = array_resultado[array_imagen.shape[0]+ty_px-1][x]
 
 	elif tx_px >= 0 and ty_px < 0: #Desplazamiento diagonal arriba derecha
 
@@ -317,7 +322,7 @@ def experimento_brillo_positivo(a1, a2, bloq):
 	return resultado_final, minimo, valor
 
 def experimento_despl_derecha(a1, a2, bloq, ancho_bloq):
-	
+
 	#DESPLAZAMIENTO DERECHA con saltos de 1 px
 	minimo = 100
 	valor = 0
@@ -540,7 +545,7 @@ def deltas(num_fotograma, bloque):
 #Extraccion de las metricas
 def metricas(fotograma, bloque, rutaMetricas):
 
-	with open(rutaMetricas + "/metricasframe"+str(fotograma)+".txt") as archivo_json:
+	with open(rutaMetricas + carpeta_metricas +str(fotograma)+".txt") as archivo_json:
 		metricas = json.load(archivo_json)
 
 	filas = int(len(metricas)/33)
@@ -562,7 +567,7 @@ def metricas(fotograma, bloque, rutaMetricas):
 	pry2 = m_metricas[n_col-1][n_fila][1]
 	pry3 = m_metricas[n_col][n_fila-1][1]
 	pry4 = m_metricas[n_col][n_fila][1]
-	
+
 
 	return (prx1, prx2, prx3, prx4, pry1, pry2, pry3, pry4)
 
@@ -656,7 +661,7 @@ def metricas(fotograma, bloque, rutaMetricas):
 # 	a2 = np.array(bloque_im2)
 # 	# resultado = experimento_brillo_negativo(a1, a2, 516, csvfile)
 # 	# experimento_brillo_positivo(a1, a2, bloq)
-	
+
 # 	# experimento_despl_derecha(resultado, a2, 516, ancho_bloq)
 # 	# resultado2 = experimento_despl_izquierda(resultado, a2, 516, ancho_bloq)
 # 	# experimento_despl_arriba(a1, a2, bloq, ancho_bloq)

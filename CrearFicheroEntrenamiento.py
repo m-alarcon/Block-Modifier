@@ -2,29 +2,45 @@
 #Todas las lineas tienen que ser del estilo: 01->,1,1,1
 
 from PIL import Image, ImageDraw
+from optparse import OptionParser
 import numpy as np
 import math
 import Funciones_div_im as div
 import csv
 import Funciones_BM as bm
 
+
 contador_linea = 1
+carpeta_frames = "/frame"
+movimientos_bloques = False
+(options, args) = OptionParser().parse_args()
 
-print ("Introducir ruta de los fotogramas a procesar")
-archivo = input()
+#It is possible to pass the args using the interactive menu or using the
+#console command.
+if (len(args) > 0):
+	archivo = args[0] #ruta a fotogramas a procesar
+	rutaMetricas = args[1] #ruta a metricas a procesar
+	fichero_entrenamiento = args[2] #nombre fichero de entrenamiento
+	carpeta_frames = args[3] #frame o frameSD
+	bm.set_carpeta_metricas(args[4]) #metricasframe o metricasframeSD
+	if (args[5] == 'yes'): #yes o no
+		movimientos_bloques = True
+else:
+	print ("Introducir ruta de los fotogramas a procesar")
+	archivo = input()
 
-print ("Introducir nombre del csv a crear")
-fichero_entrenamiento = input()
+	print ("Introducir nombre del csv a crear")
+	fichero_entrenamiento = input()
 
-print ("Escribir la ruta de las metricas del video")
-rutaMetricas = input()
+	print ("Escribir la ruta de las metricas del video")
+	rutaMetricas = input()
 
 with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 	for f in range(2, 200):
 		#Se cargan las imagenes que se van a comparar por bloques.
-		im = Image.open(archivo+"/frame"+str(f)+".bmp")
+		im = Image.open(archivo+carpeta_frames+str(f)+".bmp")
 		im = im.convert('L')
-		im2 = Image.open(archivo+"/frame"+str(f-1)+".bmp")
+		im2 = Image.open(archivo+carpeta_frames+str(f-1)+".bmp")
 		im2 = im2.convert('L')
 
 		#Calculo el numero de bloques que tienen las imagenes
@@ -52,12 +68,21 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 				(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
 
 				writer = csv.writer(csvfile, delimiter=',',
-				                        quotechar=',', quoting=csv.QUOTE_MINIMAL)
-				writer.writerow([str(contador_linea)+"->", 
-					array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
-					array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3],
-					valorx])	
+										quotechar=',', quoting=csv.QUOTE_MINIMAL)
+
+				if(movimientos_bloques):
+					#(delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5) = bm.deltas(f, bloq)
+					(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
+
+					writer.writerow([str(contador_linea)+"->",
+						array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
+						array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3],
+						valorx])
+
+				else:
+					writer.writerow([str(contador_linea)+"->",
+						array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
+						array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3]])
 
 				contador_linea = contador_linea + 1
 		print ("Procesado fotograma " + str(f) + " de 200")
-		
