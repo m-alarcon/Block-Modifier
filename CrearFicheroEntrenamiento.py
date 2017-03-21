@@ -12,6 +12,7 @@ import Funciones_BM as bm
 
 contador_linea = 1
 carpeta_frames = "/frame"
+movimientos_bloques = False
 (options, args) = OptionParser().parse_args()
 
 #It is possible to pass the args using the interactive menu or using the
@@ -22,18 +23,17 @@ if (len(args) > 0):
 	fichero_entrenamiento = args[2] #nombre fichero de entrenamiento
 	carpeta_frames = args[3] #frame o frameSD
 	bm.set_carpeta_metricas(args[4]) #metricasframe o metricasframeSD
-	movimientos_bloques = False
 	if (args[5] == 'yes'): #yes o no
 		movimientos_bloques = True
 else:
 	print ("Introducir ruta de los fotogramas a procesar")
 	archivo = input()
 
-	print ("Escribir la ruta de las metricas del video")
-	rutaMetricas = input()
-
 	print ("Introducir nombre del csv a crear")
 	fichero_entrenamiento = input()
+
+	print ("Escribir la ruta de las metricas del video")
+	rutaMetricas = input()
 
 with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 	for f in range(2, 200):
@@ -50,8 +50,8 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 		num_bloques = 32*num_filas
 
 		#Se coge el mismo bloque de las dos imagenes
-		for bloq_x in range(2, 31):
-			for bloq_y in range(2, num_filas-1):
+		for bloq_x in range(1, 31):
+			for bloq_y in range(1, num_filas):
 
 				bloq = (bloq_y*32)+bloq_x
 				bloque_im = div.sel_bloque(bloq,im)
@@ -59,24 +59,13 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 				a1 = np.array(bloque_im, 'int16')
 				a2 = np.array(bloque_im2, 'int16')
 
-				array_pr1 = bm.metricas(f, bloq-33, rutaMetricas)
-				array_pr2 = bm.metricas(f, bloq-32, rutaMetricas)
-				array_pr3 = bm.metricas(f, bloq-31, rutaMetricas)
-				array_pr4 = bm.metricas(f, bloq-1, rutaMetricas)
-				array_pr5 = bm.metricas(f, bloq, rutaMetricas)
-				array_pr6 = bm.metricas(f, bloq+1, rutaMetricas)
-				array_pr7 = bm.metricas(f, bloq+31, rutaMetricas)
-				array_pr8 = bm.metricas(f, bloq+32, rutaMetricas)
-				array_pr9 = bm.metricas(f, bloq+33, rutaMetricas)
-				array_pr10 = bm.metricas(f-1, bloq-33, rutaMetricas)
-				array_pr11 = bm.metricas(f-1, bloq-32, rutaMetricas)
-				array_pr12 = bm.metricas(f-1, bloq-31, rutaMetricas)
-				array_pr13 = bm.metricas(f-1, bloq-1, rutaMetricas)
-				array_pr14 = bm.metricas(f-1, bloq, rutaMetricas)
-				array_pr15 = bm.metricas(f-1, bloq+1, rutaMetricas)
-				array_pr16 = bm.metricas(f-1, bloq+31, rutaMetricas)
-				array_pr17 = bm.metricas(f-1, bloq+32, rutaMetricas)
-				array_pr18 = bm.metricas(f-1, bloq+33, rutaMetricas)
+				array_pr1 = bm.metricas(f, bloq, rutaMetricas)
+				array_pr2 = bm.metricas(f, bloq+1, rutaMetricas)
+				array_pr12 = bm.metricas(f-1, bloq, rutaMetricas)
+				array_pr22 = bm.metricas(f-1, bloq+1, rutaMetricas)
+
+				#(delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5) = bm.deltas(f, bloq)
+				(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
 
 				writer = csv.writer(csvfile, delimiter=',',
 										quotechar=',', quoting=csv.QUOTE_MINIMAL)
@@ -86,40 +75,14 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 					(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
 
 					writer.writerow([str(contador_linea)+"->",
-						array_pr10[0] - array_pr1[0], array_pr10[0] - array_pr2[0], array_pr10[0]-array_pr3[0],
-						array_pr11[0] - array_pr1[0], array_pr11[0] - array_pr2[0], array_pr11[0] - array_pr3[0],
-						array_pr12[0] - array_pr1[0], array_pr12[0] - array_pr2[0], array_pr12[0] - array_pr3[0],
-
-						array_pr10[2] - array_pr1[2], array_pr10[2] - array_pr2[2], array_pr10[2]-array_pr3[2],
-						array_pr11[2] - array_pr1[2], array_pr11[2] - array_pr2[2], array_pr11[2] - array_pr3[2],
-						array_pr12[2] - array_pr1[2], array_pr12[2] - array_pr2[2], array_pr12[2] - array_pr3[2],
-
-						array_pr10[4] - array_pr1[4], array_pr10[4] - array_pr2[4], array_pr10[4]-array_pr3[4],
-						array_pr11[4] - array_pr1[4], array_pr11[4] - array_pr2[4], array_pr11[4] - array_pr3[4],
-						array_pr12[4] - array_pr1[4], array_pr12[4] - array_pr2[4], array_pr12[4] - array_pr3[4],
-
-						array_pr10[6] - array_pr1[6], array_pr10[6] - array_pr2[6], array_pr10[6]-array_pr3[6],
-						array_pr11[6] - array_pr1[6], array_pr11[6] - array_pr2[6], array_pr11[6] - array_pr3[6],
-						array_pr12[6] - array_pr1[6], array_pr12[6] - array_pr2[6], array_pr12[6] - array_pr3[6],
-						valorx+0.5, valory+0.5])
+						array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
+						array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3],
+						valorx])
 
 				else:
 					writer.writerow([str(contador_linea)+"->",
-						array_pr10[0] - array_pr1[0], array_pr10[0] - array_pr2[0], array_pr10[0]-array_pr3[0],
-						array_pr11[0] - array_pr1[0], array_pr11[0] - array_pr2[0], array_pr11[0] - array_pr3[0],
-						array_pr12[0] - array_pr1[0], array_pr12[0] - array_pr2[0], array_pr12[0] - array_pr3[0],
-
-						array_pr10[2] - array_pr1[2], array_pr10[2] - array_pr2[2], array_pr10[2]-array_pr3[2],
-						array_pr11[2] - array_pr1[2], array_pr11[2] - array_pr2[2], array_pr11[2] - array_pr3[2],
-						array_pr12[2] - array_pr1[2], array_pr12[2] - array_pr2[2], array_pr12[2] - array_pr3[2],
-
-						array_pr10[4] - array_pr1[4], array_pr10[4] - array_pr2[4], array_pr10[4]-array_pr3[4],
-						array_pr11[4] - array_pr1[4], array_pr11[4] - array_pr2[4], array_pr11[4] - array_pr3[4],
-						array_pr12[4] - array_pr1[4], array_pr12[4] - array_pr2[4], array_pr12[4] - array_pr3[4],
-
-						array_pr10[6] - array_pr1[6], array_pr10[6] - array_pr2[6], array_pr10[6]-array_pr3[6],
-						array_pr11[6] - array_pr1[6], array_pr11[6] - array_pr2[6], array_pr11[6] - array_pr3[6],
-						array_pr12[6] - array_pr1[6], array_pr12[6] - array_pr2[6], array_pr12[6] - array_pr3[6]])
+						array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
+						array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3]])
 
 				contador_linea = contador_linea + 1
 		print ("Procesado fotograma " + str(f) + " de 200")

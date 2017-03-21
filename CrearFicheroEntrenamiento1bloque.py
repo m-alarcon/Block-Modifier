@@ -12,13 +12,14 @@ from optparse import OptionParser
 contador_linea = 1
 bloq = 1#(bloq_y*32)+bloq_x
 carpeta_frames = "/frame"
+movimientos_bloques = False
 (options, args) = OptionParser().parse_args()
 
 if (len(args) > 0):
 	archivo = args[0] #ruta a fotogramas a procesar
 	rutaMetricas = args[1] #ruta a metricas a procesar
 	fichero_entrenamiento = args[2] #nombre fichero de entrenamiento
-	bloq = args[3]
+	bloq = int(args[3])
 	carpeta_frames = args[4]
 	bm.set_carpeta_metricas(args[5]) #metricasframe o metricasframeSD
 	if (args[6] == 'yes'): #yes o no
@@ -34,7 +35,7 @@ else:
 	rutaMetricas = input()
 
 with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
-	for f in range(2, 2):
+	for f in range(2, 200):
 		#Se cargan las imagenes que se van a comparar por bloques.
 		im = Image.open(archivo+carpeta_frames+str(f)+".bmp")
 		im = im.convert('L')
@@ -56,11 +57,10 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 		a1 = np.array(bloque_im, 'int16')
 		a2 = np.array(bloque_im2, 'int16')
 
-		array_pr1 = bm.metricas(f, bloq-1, rutaMetricas)
-		array_pr2 = bm.metricas(f, bloq, rutaMetricas)
-		array_pr12 = bm.metricas(f-1, bloq-1, rutaMetricas)
-		array_pr22 = bm.metricas(f-1, bloq, rutaMetricas)
-
+		array_pr1 = bm.metricas(f, bloq, rutaMetricas)
+		array_pr2 = bm.metricas(f, bloq+1, rutaMetricas)
+		array_pr12 = bm.metricas(f-1, bloq, rutaMetricas)
+		array_pr22 = bm.metricas(f-1, bloq+1, rutaMetricas)
 
 		writer = csv.writer(csvfile, delimiter=',',
 								quotechar=',', quoting=csv.QUOTE_MINIMAL)
@@ -70,13 +70,14 @@ with open(fichero_entrenamiento + ".csv", 'w', newline='') as csvfile:
 			(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
 
 			writer.writerow([str(contador_linea)+"->",
-				array_pr1[0], array_pr1[1], array_pr2[1],
-				array_pr12[0], array_pr12[1], array_pr22[1], valorx])
+				array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
+				array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3],
+				valorx])
 
 		else:
 			writer.writerow([str(contador_linea)+"->",
-				array_pr1[0], array_pr1[1], array_pr2[1],
-				array_pr12[0], array_pr12[1], array_pr22[1]])
+				array_pr1[0], array_pr1[1], array_pr2[1], array_pr1[2], array_pr1[3], array_pr2[3],
+				array_pr12[0], array_pr12[1], array_pr22[1], array_pr12[2], array_pr12[3], array_pr22[3]])
 
 
 			#valorx+0.5, valory+0.5])

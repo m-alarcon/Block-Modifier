@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #./create_file.sh <frames_folder> <metrics_folder> <csvfile_name>
-EXTENSION="SD"
+EXTENSION=""
 BLOCK_MOVEMENT=yes
 
 FRAMES_ROUTE="$HOME/Projects/Images/$1"
