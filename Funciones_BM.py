@@ -571,6 +571,189 @@ def metricas(fotograma, bloque, rutaMetricas):
 
 	return (prx1, prx2, prx3, prx4, pry1, pry2, pry3, pry4)
 
+def experimento_imagen_diferencial():
+	
+	#Se cargan las imagenes que se van a comparar por bloques.
+	im = Image.open("C:/Users/malarcon/Images/Ice/frame20.bmp")#archivo+carpeta_frames+str(f)+".bmp")
+	im = im.convert('L')
+	im2 = Image.open("C:/Users/malarcon/Images/Ice/frame19.bmp")#archivo+carpeta_frames+str(f-1)+".bmp")
+	im2 = im2.convert('L')
+
+	im = np.array(im, 'float')
+	im2 = np.array(im2, 'float')
+
+	error = np.zeros(im.size, 'float')
+	error = np.subtract(im, im2)
+	im_diferencial = (error/2)+128
+	im_diferencial = im_diferencial.astype('uint8')
+	#print (*im_diferencial)
+	im_diferencial = Image.fromarray(im_diferencial)
+	#im_diferencial.show()
+	im_diferencial.save("Imagen_DiferencialPatinadores19-20.bmp")
+
+#experimento_imagen_diferencial()
+
+def experimento_6metricas():
+	
+	rutaMetricas = "C:/Users/malarcon/Images/MetricasIce"
+	array_mov_anterior = np.zeros((31,26-1), 'float16')
+	array_dirmov_anterior = np.zeros((31,26-1), 'float16')
+	for f in range(2, 100):
+		#Se cargan las imagenes que se van a comparar por bloques.
+		im = Image.open("C:/Users/malarcon/Images/Ice/frame"+str(f)+".bmp")#archivo+carpeta_frames+str(f)+".bmp")
+		im = im.convert('L')
+		im2 = Image.open("C:/Users/malarcon/Images/Ice/frame"+str(f-1)+".bmp")#archivo+carpeta_frames+str(f-1)+".bmp")
+		im2 = im2.convert('L')
+
+		im = np.array(im, 'float')
+		im2 = np.array(im2, 'float')	
+
+		#El delta va a ser la resta de los valores de los píxeles en el bloque. Un delta por píxel.
+		deltaTotal = np.sum(np.abs(np.subtract(im,im2)))
+		print ("Error cometido sin vectores de movimiento:" + str(deltaTotal))
+		
+		im = Image.open("C:/Users/malarcon/Images/Ice/frame"+str(f)+".bmp")#archivo+carpeta_frames+str(f)+".bmp")
+		im = im.convert('L')
+		im2 = Image.open("C:/Users/malarcon/Images/Ice/frame"+str(f-1)+".bmp")#archivo+carpeta_frames+str(f-1)+".bmp")
+		im2 = im2.convert('L')	
+
+		#Calculo el numero de bloques que tienen las imagenes
+		(ancho, largo) = im.size
+		ancho_bloq = int(ancho/32)
+		num_filas = int(largo/ancho_bloq)
+		num_bloques = 32*num_filas
+
+		deltaConDespl = 0
+		#Se coge el mismo bloque de las dos imagenes
+		for bloq_x in range(0, 31):
+			for bloq_y in range(0, num_filas-1):
+
+				mov_sup = 0
+				mov_inf = 0
+				mov_bloque = 0
+				dir_sup = 0
+				dir_inf = 0
+				dir_bloque = 0
+				mov_final = 0
+				bloq = (bloq_y*32)+bloq_x+1
+				bloque_im = div.sel_bloque(bloq,im)
+				bloque_im2 = div.sel_bloque(bloq,im2)
+				a1 = np.array(bloque_im, 'int16')
+				a2 = np.array(bloque_im2, 'int16')
+
+				array_pr1 = metricas(f, bloq, rutaMetricas)
+				array_pr2 = metricas(f, bloq+1, rutaMetricas)
+				array_pr12 = metricas(f-1, bloq, rutaMetricas)
+				array_pr22 = metricas(f-1, bloq+1, rutaMetricas)
+
+				#(delta0, delta1, delta2, delta3, delta4, delta5, delta_1, delta_2, delta_3, delta_4, delta_5) = bm.deltas(f, bloq)
+				#(resultado, minimo, valorx, valory) = bm.experimento_despl_v2(a1, a2, bloq, ancho_bloq)
+
+				#Comprobar que las PR superiores sean iguales (en este caso solo se comprueban las del bloque que estamos midiendo)
+				if (array_pr1[0]-array_pr12[0]<= 0.125 and array_pr1[1]-array_pr12[1]<=0.125):
+					mov_sup = 0
+				else:
+					mov_sup = 1
+
+				#Comprobar que las PR inferiores sean iguales
+				if (array_pr1[2]-array_pr12[2]<= 0.125 and array_pr1[3]-array_pr12[3]<=0.125):
+					mov_inf = 0
+				else:
+					mov_inf = 1
+
+				#Si concuerdan los lados superior e inferior decimos que no hay movimiento, si no concuerdan decimos que en el bloque hay algun movimiento	
+				if (mov_sup == 0 and mov_inf == 0):
+					mov_bloque = 0
+				else:
+					mov_bloque = 1
+
+				#En el lado superior se han desplazado las metricas a izquierda o a derecha? Si en el bloque anterior ha habido movimiento se mantiene
+				if (mov_bloque == 0 and array_mov_anterior[bloq_x][bloq_y] == 0):
+					dir_sup = '0'
+				elif (abs(array_pr1[1]-array_pr12[0]) <= 0 and abs(array_pr2[1]-array_pr12[1]) <= 0):
+					dir_sup = 'I'
+				elif (abs(array_pr1[1]-array_pr22[1]) <= 0 and abs(array_pr1[0]-array_pr12[1]) <= 0):
+					dir_sup = 'D'
+				else:
+					dir_sup = 'U'
+				#Lo mismo pero con el lado inferior
+				if (mov_bloque == 0 and array_mov_anterior[bloq_x][bloq_y] == 0):
+					dir_inf = '0'
+				elif (abs(array_pr1[3]-array_pr12[2]) <= 0 and abs(array_pr2[3]-array_pr12[3]) <= 0):
+					dir_inf = 'I'
+				elif (abs(array_pr1[3]-array_pr22[3]) <= 0 and abs(array_pr1[2]-array_pr12[3]) <= 0):
+					dir_inf = 'D'
+				else:
+					dir_inf = 'U'
+
+				#Ahora se define el movimiento final del bloque, izquierda o derecha dependiendo de cada uno de los lados
+				if (dir_inf != 'U' and dir_sup != 'U' and dir_inf == dir_sup):
+					dir_bloque = dir_inf
+				#elif (dir_inf == 'U' and dir_sup != 'U'):
+				#	dir_bloque = dir_sup
+				#elif (dir_sup == 'U' and dir_inf != 'U'):
+				#	dir_bloque = dir_inf
+				#elif (dir_inf == 'U' and dir_sup == 'U'):
+				#	dir_bloque = 'U'
+				else:
+					dir_bloque = 'U'
+
+				if (array_dirmov_anterior[bloq_x][bloq_y] == dir_bloque):
+					array_dirmov_anterior[bloq_x][bloq_y] = dir_bloque
+				else:
+					array_dirmov_anterior[bloq_x][bloq_y] = '0'
+
+				if (dir_bloque == '0' and array_mov_anterior[bloq_x][bloq_y] == 0):
+					mov_final = 0
+					array_mov_anterior[bloq_x][bloq_y] = 0
+				elif (dir_bloque == '0' and array_mov_anterior[bloq_x][bloq_y] > 0):
+					if (dir_bloque == '0' and array_mov_anterior[bloq_x][bloq_y] <= 0.1):
+						mov_final = 0
+						array_mov_anterior[bloq_x][bloq_y] = mov_final
+					else:
+						mov_final = array_mov_anterior[bloq_x][bloq_y]-0.1
+						array_mov_anterior[bloq_x][bloq_y] = mov_final
+				elif (dir_bloque == '0' and array_mov_anterior[bloq_x][bloq_y] < 0):
+					if (dir_bloque == '0' and array_mov_anterior[bloq_x][bloq_y] >= -0.1):
+						mov_final = 0
+						array_mov_anterior[bloq_x][bloq_y] = mov_final
+					else:
+						mov_final = array_mov_anterior[bloq_x][bloq_y]+0.1
+						array_mov_anterior[bloq_x][bloq_y] = mov_final		
+				elif (dir_bloque == 'D' and array_mov_anterior[bloq_x][bloq_y] == 0):
+					mov_final = array_mov_anterior[bloq_x][bloq_y]+0.25
+					array_mov_anterior[bloq_x,bloq_y] = mov_final
+				elif (dir_bloque == 'D' and array_mov_anterior[bloq_x][bloq_y] > 0 and array_mov_anterior[bloq_x][bloq_y] <= 0.4):
+					mov_final = array_mov_anterior[bloq_x][bloq_y]+0.1
+					array_mov_anterior[bloq_x][bloq_y] = mov_final
+				elif (dir_bloque == 'D' and array_mov_anterior[bloq_x][bloq_y] >= 0.4):
+					mov_final = 0.5
+					array_mov_anterior[bloq_x][bloq_y] = mov_final
+				elif (dir_bloque == 'I' and array_mov_anterior[bloq_x][bloq_y] == 0):
+					mov_final = array_mov_anterior[bloq_x][bloq_y]-0.25
+					array_mov_anterior[bloq_x][bloq_y] = mov_final
+				elif (dir_bloque == 'I' and array_mov_anterior[bloq_x][bloq_y] < 0 and array_mov_anterior[bloq_x][bloq_y] >= -0.4):
+					mov_final = array_mov_anterior[bloq_x][bloq_y]-0.1
+					array_mov_anterior[bloq_x][bloq_y] = mov_final
+				elif (dir_bloque == 'I' and array_mov_anterior[bloq_x][bloq_y] <= -0.4):
+					mov_final = -0.5
+					array_mov_anterior[bloq_x][bloq_y] = mov_final
+				else:
+					mov_final = 0
+					array_mov_anterior[bloq_x][bloq_y] = mov_final
+
+				bloque_desplazado = desplazamiento_v2(int(array_mov_anterior[bloq_x][bloq_y]*ancho_bloq), 0, a2)
+
+				a1 = np.array(a1, 'float')
+				bloque_desplazado = np.array(bloque_desplazado, 'float')
+				deltaConDespl = deltaConDespl + np.sum(np.abs(np.subtract(bloque_desplazado,a1)))
+		print ("Error cometido CON vectores de movimiento:" + str(deltaConDespl))
+		print ("Porcentaje de reduccion: " + str(((deltaConDespl*100)/deltaTotal)))
+
+		print ("Procesado fotograma " + str(f) + " de 200")
+
+experimento_6metricas()
+
 # #Caracterizacion del delta
 # #Se va a caracterizar tanto la dispersión como los valores del delta de los bloques de dos fotogramas consecutivos
 # #para agruparlos.
